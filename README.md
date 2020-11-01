@@ -1,8 +1,3 @@
-a card matching memory game
-
-test using 'npm run watch'
-
-deploy using 'npm run deploy'
-
+a pinball prototype 
 deploys to:
-https://dgrenzo.github.io/memory_game/
+https://dgrenzo.github.io/pinball_bakery/
