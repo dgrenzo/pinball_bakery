@@ -39,16 +39,16 @@ var Flipper = (function (_super) {
             var lowerAngle, upperAngle;
             if (_this.m_orientation === FLIPPER_ORIENTATION.RIGHT) {
                 lowerAngle = -30 * Math.PI / 180.0;
-                upperAngle = 5 * Math.PI / 180.0;
+                upperAngle = 15 * Math.PI / 180.0;
             }
             else {
                 upperAngle = 30 * Math.PI / 180.0;
-                lowerAngle = -5 * Math.PI / 180.0;
+                lowerAngle = -15 * Math.PI / 180.0;
             }
             _this.m_joint = PLANCK.RevoluteJoint({
                 enableMotor: true,
                 enableLimit: true,
-                maxMotorTorque: 10000.0,
+                maxMotorTorque: 25000.0,
                 motorSpeed: 0,
                 lowerAngle: lowerAngle,
                 upperAngle: upperAngle,
@@ -57,18 +57,18 @@ var Flipper = (function (_super) {
             _this.world.createJoint(_this.m_joint);
         };
         _this.m_orientation = config.orientation;
-        _this.addBox(4, 0.5, { density: 6, restitution: 0.65, friction: 0 });
+        _this.addBox(4, 0.5, { density: 4, restitution: 0.15, friction: 0 });
         _this.m_anchor_element = table.createElement();
         _this.m_anchor_element.addCircle(0.25);
         var KEY_CODE = _this.m_orientation === FLIPPER_ORIENTATION.LEFT ? 'a' : 'd';
         document.addEventListener("keydown", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * 2000.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * 12.0);
             }
         });
         document.addEventListener("keyup", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * -500.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * -12.0);
             }
         });
         _this.setPosition(config.x, config.y);

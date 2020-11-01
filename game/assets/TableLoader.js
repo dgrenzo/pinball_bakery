@@ -13,7 +13,7 @@ function LoadTable(path, table) {
             _.forEach(element.vertices, function (vertex) {
                 vertices.push(PLANCK.Vec2(vertex[0], vertex[1]));
             });
-            table_element.addPolygon(vertices);
+            table_element.addPolygon(vertices, { restitution: 0 });
         });
     });
 }

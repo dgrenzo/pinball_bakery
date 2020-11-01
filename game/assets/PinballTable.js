@@ -41,10 +41,10 @@ var PinballTable = (function () {
             var ball = _this.createElement({
                 type: "dynamic",
                 bullet: true,
-                linearDamping: 0.01,
+                linearDamping: 0.05,
             });
             ball.setPosition(25, 0);
-            ball.addCircle(0.5, { density: 4, restitution: 0.85 });
+            ball.addCircle(0.5, { density: 1, restitution: 0.55 });
         };
         this.addFlipper = function (config) {
             return _this.addElement(new Flipper_1.Flipper(_this.m_phys_world, _this, config));
@@ -58,6 +58,7 @@ var PinballTable = (function () {
             _this.m_entities.push(element);
             return element;
         };
+        this.sprite.scale.set(1);
         pixi_app.stage.addChild(this.sprite);
         pixi_app.ticker.add(this.update);
         this.m_phys_world = PLANCK.World({

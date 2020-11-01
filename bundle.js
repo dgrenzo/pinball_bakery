@@ -55,16 +55,16 @@ var Flipper = (function (_super) {
             var lowerAngle, upperAngle;
             if (_this.m_orientation === FLIPPER_ORIENTATION.RIGHT) {
                 lowerAngle = -30 * Math.PI / 180.0;
-                upperAngle = 5 * Math.PI / 180.0;
+                upperAngle = 15 * Math.PI / 180.0;
             }
             else {
                 upperAngle = 30 * Math.PI / 180.0;
-                lowerAngle = -5 * Math.PI / 180.0;
+                lowerAngle = -15 * Math.PI / 180.0;
             }
             _this.m_joint = PLANCK.RevoluteJoint({
                 enableMotor: true,
                 enableLimit: true,
-                maxMotorTorque: 10000.0,
+                maxMotorTorque: 25000.0,
                 motorSpeed: 0,
                 lowerAngle: lowerAngle,
                 upperAngle: upperAngle,
@@ -73,18 +73,18 @@ var Flipper = (function (_super) {
             _this.world.createJoint(_this.m_joint);
         };
         _this.m_orientation = config.orientation;
-        _this.addBox(4, 0.5, { density: 6, restitution: 0.65, friction: 0 });
+        _this.addBox(4, 0.5, { density: 4, restitution: 0.15, friction: 0 });
         _this.m_anchor_element = table.createElement();
         _this.m_anchor_element.addCircle(0.25);
         var KEY_CODE = _this.m_orientation === FLIPPER_ORIENTATION.LEFT ? 'a' : 'd';
         document.addEventListener("keydown", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * 2000.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * 12.0);
             }
         });
         document.addEventListener("keyup", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * -500.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * -12.0);
             }
         });
         _this.setPosition(config.x, config.y);
@@ -202,10 +202,10 @@ var PinballTable = (function () {
             var ball = _this.createElement({
                 type: "dynamic",
                 bullet: true,
-                linearDamping: 0.01,
+                linearDamping: 0.05,
             });
             ball.setPosition(25, 0);
-            ball.addCircle(0.5, { density: 4, restitution: 0.85 });
+            ball.addCircle(0.5, { density: 1, restitution: 0.55 });
         };
         this.addFlipper = function (config) {
             return _this.addElement(new Flipper_1.Flipper(_this.m_phys_world, _this, config));
@@ -219,6 +219,7 @@ var PinballTable = (function () {
             _this.m_entities.push(element);
             return element;
         };
+        this.sprite.scale.set(1);
         pixi_app.stage.addChild(this.sprite);
         pixi_app.ticker.add(this.update);
         this.m_phys_world = PLANCK.World({
@@ -248,7 +249,7 @@ function LoadTable(path, table) {
             _.forEach(element.vertices, function (vertex) {
                 vertices.push(PLANCK.Vec2(vertex[0], vertex[1]));
             });
-            table_element.addPolygon(vertices);
+            table_element.addPolygon(vertices, { restitution: 0 });
         });
     });
 }
