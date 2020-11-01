@@ -103,7 +103,7 @@ var Flipper = (function (_super) {
 }(GameElement_1.default));
 exports.Flipper = Flipper;
 
-},{"./GameElement":3,"planck-js":76}],3:[function(require,module,exports){
+},{"./GameElement":3,"planck-js":77}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var PIXI = require("pixi.js");
@@ -168,7 +168,37 @@ var GameElement = (function () {
 }());
 exports.default = GameElement;
 
-},{"./utils":6,"lodash":46,"pixi.js":50,"planck-js":76}],4:[function(require,module,exports){
+},{"./utils":7,"lodash":47,"pixi.js":51,"planck-js":77}],4:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var GameElement_1 = require("./GameElement");
+var Pinball = (function (_super) {
+    __extends(Pinball, _super);
+    function Pinball(world, table, x, y) {
+        var _this = _super.call(this, world.createBody({ type: "dynamic", bullet: true, linearDamping: 0.05 })) || this;
+        _this.world = world;
+        _this.addCircle(0.5, { density: 1, restitution: 0.65 });
+        _this.setPosition(x, y);
+        return _this;
+    }
+    return Pinball;
+}(GameElement_1.default));
+exports.default = Pinball;
+
+},{"./GameElement":3}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var GameElement_1 = require("./GameElement");
@@ -177,6 +207,7 @@ var PIXI = require("pixi.js");
 var _ = require("lodash");
 var TableLoader_1 = require("./TableLoader");
 var Flipper_1 = require("./Flipper");
+var Pinball_1 = require("./Pinball");
 var PinballTable = (function () {
     function PinballTable(pixi_app) {
         var _this = this;
@@ -188,13 +219,13 @@ var PinballTable = (function () {
         this.init = function () {
             _this.spawnBall();
             _this.addFlipper({
-                x: 14,
-                y: 25.25,
+                x: 14.25,
+                y: 25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.LEFT
             });
             _this.addFlipper({
-                x: 26,
-                y: 25.25,
+                x: 25.75,
+                y: 25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.RIGHT
             });
             document.addEventListener('keypress', function (evt) {
@@ -204,19 +235,16 @@ var PinballTable = (function () {
             });
         };
         this.update = function (deltaTime) {
-            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1500, 20, 10);
+            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1400, 20, 10);
             _.forEach(_this.m_entities, function (ent) {
                 ent.update();
             });
         };
         this.spawnBall = function () {
-            var ball = _this.createElement({
-                type: "dynamic",
-                bullet: true,
-                linearDamping: 0.05,
-            });
-            ball.setPosition(25, 0);
-            ball.addCircle(0.5, { density: 1, restitution: 0.55 });
+            var ball = _this.addBall(25, 0);
+        };
+        this.addBall = function (x, y) {
+            return _this.addElement(new Pinball_1.default(_this.m_phys_world, _this, x, y));
         };
         this.addFlipper = function (config) {
             return _this.addElement(new Flipper_1.Flipper(_this.m_phys_world, _this, config));
@@ -244,7 +272,7 @@ var PinballTable = (function () {
 }());
 exports.default = PinballTable;
 
-},{"./Flipper":2,"./GameElement":3,"./TableLoader":5,"lodash":46,"pixi.js":50,"planck-js":76}],5:[function(require,module,exports){
+},{"./Flipper":2,"./GameElement":3,"./Pinball":4,"./TableLoader":6,"lodash":47,"pixi.js":51,"planck-js":77}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoadJSON = exports.LoadTable = void 0;
@@ -277,13 +305,13 @@ function LoadJSON(path) {
 }
 exports.LoadJSON = LoadJSON;
 
-},{"lodash":46,"pixi.js":50,"planck-js":76}],6:[function(require,module,exports){
+},{"lodash":47,"pixi.js":51,"planck-js":77}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WORLD_SCALE = void 0;
 exports.WORLD_SCALE = 20;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var PIXI = require("pixi.js");
@@ -299,7 +327,7 @@ AssetManager_1.AssetManager.LoadAssets().then(function () {
     table.load("board_1.json").then(table.init);
 });
 
-},{"./game/assets/AssetManager":1,"./game/assets/PinballTable":4,"pixi.js":50}],8:[function(require,module,exports){
+},{"./game/assets/AssetManager":1,"./game/assets/PinballTable":5,"pixi.js":51}],9:[function(require,module,exports){
 /*!
  * @pixi/accessibility - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -950,7 +978,7 @@ exports.AccessibilityManager = AccessibilityManager;
 exports.accessibleTarget = accessibleTarget;
 
 
-},{"@pixi/display":12,"@pixi/utils":41}],9:[function(require,module,exports){
+},{"@pixi/display":13,"@pixi/utils":42}],10:[function(require,module,exports){
 /*!
  * @pixi/app - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -1185,7 +1213,7 @@ Application.registerPlugin(ResizePlugin);
 exports.Application = Application;
 
 
-},{"@pixi/core":11,"@pixi/display":12}],10:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/display":13}],11:[function(require,module,exports){
 /*!
  * @pixi/constants - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -1535,7 +1563,7 @@ exports.TYPES = TYPES;
 exports.WRAP_MODES = WRAP_MODES;
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*!
  * @pixi/core - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -14015,7 +14043,7 @@ exports.resources = index;
 exports.systems = systems;
 
 
-},{"@pixi/constants":10,"@pixi/display":12,"@pixi/math":23,"@pixi/runner":32,"@pixi/settings":33,"@pixi/ticker":40,"@pixi/utils":41}],12:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/display":13,"@pixi/math":24,"@pixi/runner":33,"@pixi/settings":34,"@pixi/ticker":41,"@pixi/utils":42}],13:[function(require,module,exports){
 /*!
  * @pixi/display - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -15823,7 +15851,7 @@ exports.Container = Container;
 exports.DisplayObject = DisplayObject;
 
 
-},{"@pixi/math":23,"@pixi/settings":33,"@pixi/utils":41}],13:[function(require,module,exports){
+},{"@pixi/math":24,"@pixi/settings":34,"@pixi/utils":42}],14:[function(require,module,exports){
 /*!
  * @pixi/extract - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -16126,7 +16154,7 @@ Extract.arrayPostDivide = function arrayPostDivide (pixels, out)
 exports.Extract = Extract;
 
 
-},{"@pixi/core":11,"@pixi/math":23,"@pixi/utils":41}],14:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/math":24,"@pixi/utils":42}],15:[function(require,module,exports){
 /*!
  * @pixi/filter-alpha - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -16199,7 +16227,7 @@ var AlphaFilter = /*@__PURE__*/(function (Filter) {
 exports.AlphaFilter = AlphaFilter;
 
 
-},{"@pixi/core":11}],15:[function(require,module,exports){
+},{"@pixi/core":12}],16:[function(require,module,exports){
 /*!
  * @pixi/filter-blur - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -16635,7 +16663,7 @@ exports.BlurFilter = BlurFilter;
 exports.BlurFilterPass = BlurFilterPass;
 
 
-},{"@pixi/core":11,"@pixi/settings":33}],16:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/settings":34}],17:[function(require,module,exports){
 /*!
  * @pixi/filter-color-matrix - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -17242,7 +17270,7 @@ ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 exports.ColorMatrixFilter = ColorMatrixFilter;
 
 
-},{"@pixi/core":11}],17:[function(require,module,exports){
+},{"@pixi/core":12}],18:[function(require,module,exports){
 /*!
  * @pixi/filter-displacement - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -17369,7 +17397,7 @@ var DisplacementFilter = /*@__PURE__*/(function (Filter) {
 exports.DisplacementFilter = DisplacementFilter;
 
 
-},{"@pixi/core":11,"@pixi/math":23}],18:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/math":24}],19:[function(require,module,exports){
 /*!
  * @pixi/filter-fxaa - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -17415,7 +17443,7 @@ var FXAAFilter = /*@__PURE__*/(function (Filter) {
 exports.FXAAFilter = FXAAFilter;
 
 
-},{"@pixi/core":11}],19:[function(require,module,exports){
+},{"@pixi/core":12}],20:[function(require,module,exports){
 /*!
  * @pixi/filter-noise - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -17503,7 +17531,7 @@ var NoiseFilter = /*@__PURE__*/(function (Filter) {
 exports.NoiseFilter = NoiseFilter;
 
 
-},{"@pixi/core":11}],20:[function(require,module,exports){
+},{"@pixi/core":12}],21:[function(require,module,exports){
 /*!
  * @pixi/graphics - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -21031,7 +21059,7 @@ exports.GraphicsGeometry = GraphicsGeometry;
 exports.LineStyle = LineStyle;
 
 
-},{"@pixi/constants":10,"@pixi/core":11,"@pixi/display":12,"@pixi/math":23,"@pixi/utils":41}],21:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/core":12,"@pixi/display":13,"@pixi/math":24,"@pixi/utils":42}],22:[function(require,module,exports){
 /*!
  * @pixi/interaction - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -23509,7 +23537,7 @@ exports.InteractionTrackingData = InteractionTrackingData;
 exports.interactiveTarget = interactiveTarget;
 
 
-},{"@pixi/display":12,"@pixi/math":23,"@pixi/ticker":40,"@pixi/utils":41}],22:[function(require,module,exports){
+},{"@pixi/display":13,"@pixi/math":24,"@pixi/ticker":41,"@pixi/utils":42}],23:[function(require,module,exports){
 /*!
  * @pixi/loaders - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -23824,7 +23852,7 @@ exports.LoaderResource = LoaderResource;
 exports.TextureLoader = TextureLoader;
 
 
-},{"@pixi/core":11,"@pixi/utils":41,"resource-loader":109}],23:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/utils":42,"resource-loader":110}],24:[function(require,module,exports){
 /*!
  * @pixi/math - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -25946,7 +25974,7 @@ exports.SHAPES = SHAPES;
 exports.Transform = Transform;
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*!
  * @pixi/mesh-extras - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -26716,7 +26744,7 @@ exports.SimplePlane = SimplePlane;
 exports.SimpleRope = SimpleRope;
 
 
-},{"@pixi/core":11,"@pixi/mesh":25}],25:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/mesh":26}],26:[function(require,module,exports){
 /*!
  * @pixi/mesh - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -27511,7 +27539,7 @@ exports.MeshGeometry = MeshGeometry;
 exports.MeshMaterial = MeshMaterial;
 
 
-},{"@pixi/constants":10,"@pixi/core":11,"@pixi/display":12,"@pixi/math":23,"@pixi/settings":33,"@pixi/utils":41}],26:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/core":12,"@pixi/display":13,"@pixi/math":24,"@pixi/settings":34,"@pixi/utils":42}],27:[function(require,module,exports){
 /*!
  * @pixi/mixin-cache-as-bitmap - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -27946,7 +27974,7 @@ display.DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapD
 };
 
 
-},{"@pixi/core":11,"@pixi/display":12,"@pixi/math":23,"@pixi/settings":33,"@pixi/sprite":36,"@pixi/utils":41}],27:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/display":13,"@pixi/math":24,"@pixi/settings":34,"@pixi/sprite":37,"@pixi/utils":42}],28:[function(require,module,exports){
 /*!
  * @pixi/mixin-get-child-by-name - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -27988,7 +28016,7 @@ display.Container.prototype.getChildByName = function getChildByName(name)
 };
 
 
-},{"@pixi/display":12}],28:[function(require,module,exports){
+},{"@pixi/display":13}],29:[function(require,module,exports){
 /*!
  * @pixi/mixin-get-global-position - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -28031,7 +28059,7 @@ display.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(p
 };
 
 
-},{"@pixi/display":12,"@pixi/math":23}],29:[function(require,module,exports){
+},{"@pixi/display":13,"@pixi/math":24}],30:[function(require,module,exports){
 /*!
  * @pixi/particles - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -29013,7 +29041,7 @@ exports.ParticleContainer = ParticleContainer;
 exports.ParticleRenderer = ParticleRenderer;
 
 
-},{"@pixi/constants":10,"@pixi/core":11,"@pixi/display":12,"@pixi/math":23,"@pixi/utils":41}],30:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/core":12,"@pixi/display":13,"@pixi/math":24,"@pixi/utils":42}],31:[function(require,module,exports){
 (function (global){(function (){
 /*!
  * @pixi/polyfill - v5.1.6
@@ -29182,7 +29210,7 @@ if (!window.Int32Array)
 
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"es6-promise-polyfill":44,"object-assign":48}],31:[function(require,module,exports){
+},{"es6-promise-polyfill":45,"object-assign":49}],32:[function(require,module,exports){
 /*!
  * @pixi/prepare - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -29912,7 +29940,7 @@ exports.Prepare = Prepare;
 exports.TimeLimiter = TimeLimiter;
 
 
-},{"@pixi/core":11,"@pixi/display":12,"@pixi/graphics":20,"@pixi/settings":33,"@pixi/text":39,"@pixi/ticker":40}],32:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/display":13,"@pixi/graphics":21,"@pixi/settings":34,"@pixi/text":40,"@pixi/ticker":41}],33:[function(require,module,exports){
 /*!
  * @pixi/runner - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -30132,7 +30160,7 @@ Runner.prototype.run = Runner.prototype.emit;
 exports.Runner = Runner;
 
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /*!
  * @pixi/settings - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -30456,7 +30484,7 @@ exports.isMobile = isMobile;
 exports.settings = settings;
 
 
-},{"ismobilejs":45}],34:[function(require,module,exports){
+},{"ismobilejs":46}],35:[function(require,module,exports){
 /*!
  * @pixi/sprite-animated - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -30917,7 +30945,7 @@ var AnimatedSprite = /*@__PURE__*/(function (Sprite) {
 exports.AnimatedSprite = AnimatedSprite;
 
 
-},{"@pixi/core":11,"@pixi/sprite":36,"@pixi/ticker":40}],35:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/sprite":37,"@pixi/ticker":41}],36:[function(require,module,exports){
 /*!
  * @pixi/sprite-tiling - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -31427,7 +31455,7 @@ exports.TilingSprite = TilingSprite;
 exports.TilingSpriteRenderer = TilingSpriteRenderer;
 
 
-},{"@pixi/constants":10,"@pixi/core":11,"@pixi/math":23,"@pixi/sprite":36,"@pixi/utils":41}],36:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/core":12,"@pixi/math":24,"@pixi/sprite":37,"@pixi/utils":42}],37:[function(require,module,exports){
 /*!
  * @pixi/sprite - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -32111,7 +32139,7 @@ var Sprite = /*@__PURE__*/(function (Container) {
 exports.Sprite = Sprite;
 
 
-},{"@pixi/constants":10,"@pixi/core":11,"@pixi/display":12,"@pixi/math":23,"@pixi/settings":33,"@pixi/utils":41}],37:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/core":12,"@pixi/display":13,"@pixi/math":24,"@pixi/settings":34,"@pixi/utils":42}],38:[function(require,module,exports){
 /*!
  * @pixi/spritesheet - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -32532,7 +32560,7 @@ exports.Spritesheet = Spritesheet;
 exports.SpritesheetLoader = SpritesheetLoader;
 
 
-},{"@pixi/core":11,"@pixi/loaders":22,"@pixi/math":23,"@pixi/utils":41}],38:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/loaders":23,"@pixi/math":24,"@pixi/utils":42}],39:[function(require,module,exports){
 /*!
  * @pixi/text-bitmap - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -33373,7 +33401,7 @@ exports.BitmapFontLoader = BitmapFontLoader;
 exports.BitmapText = BitmapText;
 
 
-},{"@pixi/core":11,"@pixi/display":12,"@pixi/loaders":22,"@pixi/math":23,"@pixi/settings":33,"@pixi/sprite":36,"@pixi/utils":41}],39:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/display":13,"@pixi/loaders":23,"@pixi/math":24,"@pixi/settings":34,"@pixi/sprite":37,"@pixi/utils":42}],40:[function(require,module,exports){
 /*!
  * @pixi/text - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -35660,7 +35688,7 @@ exports.TextMetrics = TextMetrics;
 exports.TextStyle = TextStyle;
 
 
-},{"@pixi/core":11,"@pixi/math":23,"@pixi/settings":33,"@pixi/sprite":36,"@pixi/utils":41}],40:[function(require,module,exports){
+},{"@pixi/core":12,"@pixi/math":24,"@pixi/settings":34,"@pixi/sprite":37,"@pixi/utils":42}],41:[function(require,module,exports){
 /*!
  * @pixi/ticker - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -36623,7 +36651,7 @@ exports.TickerPlugin = TickerPlugin;
 exports.UPDATE_PRIORITY = UPDATE_PRIORITY;
 
 
-},{"@pixi/settings":33}],41:[function(require,module,exports){
+},{"@pixi/settings":34}],42:[function(require,module,exports){
 /*!
  * @pixi/utils - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -37650,7 +37678,7 @@ exports.trimCanvas = trimCanvas;
 exports.uid = uid;
 
 
-},{"@pixi/constants":10,"@pixi/settings":33,"earcut":43,"eventemitter3":42,"url":111}],42:[function(require,module,exports){
+},{"@pixi/constants":11,"@pixi/settings":34,"earcut":44,"eventemitter3":43,"url":112}],43:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -37988,7 +38016,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -38669,7 +38697,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 (function (global,setImmediate){(function (){
 (function(global){
 
@@ -39019,9 +39047,9 @@ Promise.reject = function(reason){
 })(typeof window != 'undefined' ? window : typeof global != 'undefined' ? global : typeof self != 'undefined' ? self : this);
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"timers":110}],45:[function(require,module,exports){
+},{"timers":111}],46:[function(require,module,exports){
 !function(e){var n=/iPhone/i,t=/iPod/i,r=/iPad/i,a=/\bAndroid(?:.+)Mobile\b/i,p=/Android/i,b=/\bAndroid(?:.+)SD4930UR\b/i,l=/\bAndroid(?:.+)(?:KF[A-Z]{2,4})\b/i,f=/Windows Phone/i,s=/\bWindows(?:.+)ARM\b/i,u=/BlackBerry/i,c=/BB10/i,h=/Opera Mini/i,v=/\b(CriOS|Chrome)(?:.+)Mobile/i,w=/Mobile(?:.+)Firefox\b/i;function m(e,i){return e.test(i)}function i(e){var i=e||("undefined"!=typeof navigator?navigator.userAgent:""),o=i.split("[FBAN");void 0!==o[1]&&(i=o[0]),void 0!==(o=i.split("Twitter"))[1]&&(i=o[0]);var d={apple:{phone:m(n,i)&&!m(f,i),ipod:m(t,i),tablet:!m(n,i)&&m(r,i)&&!m(f,i),device:(m(n,i)||m(t,i)||m(r,i))&&!m(f,i)},amazon:{phone:m(b,i),tablet:!m(b,i)&&m(l,i),device:m(b,i)||m(l,i)},android:{phone:!m(f,i)&&m(b,i)||!m(f,i)&&m(a,i),tablet:!m(f,i)&&!m(b,i)&&!m(a,i)&&(m(l,i)||m(p,i)),device:!m(f,i)&&(m(b,i)||m(l,i)||m(a,i)||m(p,i))||m(/\bokhttp\b/i,i)},windows:{phone:m(f,i),tablet:m(s,i),device:m(f,i)||m(s,i)},other:{blackberry:m(u,i),blackberry10:m(c,i),opera:m(h,i),firefox:m(w,i),chrome:m(v,i),device:m(u,i)||m(c,i)||m(h,i)||m(w,i)||m(v,i)}};return d.any=d.apple.device||d.android.device||d.windows.device||d.other.device,d.phone=d.apple.phone||d.android.phone||d.windows.phone,d.tablet=d.apple.tablet||d.android.tablet||d.windows.tablet,d}"undefined"!=typeof module&&module.exports&&"undefined"==typeof window?module.exports=i:"undefined"!=typeof module&&module.exports&&"undefined"!=typeof window?(module.exports=i(),module.exports.isMobile=i):"function"==typeof define&&define.amd?define([],e.isMobile=i()):e.isMobile=i()}(this);
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (global){(function (){
 /**
  * @license
@@ -56186,7 +56214,7 @@ Promise.reject = function(reason){
 }.call(this));
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -56353,7 +56381,7 @@ MiniSignal.MiniSignalBinding = MiniSignalBinding;
 exports['default'] = MiniSignal;
 module.exports = exports['default'];
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -56445,7 +56473,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict'
 
 function parseURI (str, opts) {
@@ -56496,7 +56524,7 @@ function parseURI (str, opts) {
 
 module.exports = parseURI
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /*!
  * pixi.js - v5.1.6
  * Compiled Thu, 13 Feb 2020 04:58:13 UTC
@@ -57930,7 +57958,7 @@ exports.filters = filters;
 exports.useDeprecated = useDeprecated;
 
 
-},{"@pixi/accessibility":8,"@pixi/app":9,"@pixi/constants":10,"@pixi/core":11,"@pixi/display":12,"@pixi/extract":13,"@pixi/filter-alpha":14,"@pixi/filter-blur":15,"@pixi/filter-color-matrix":16,"@pixi/filter-displacement":17,"@pixi/filter-fxaa":18,"@pixi/filter-noise":19,"@pixi/graphics":20,"@pixi/interaction":21,"@pixi/loaders":22,"@pixi/math":23,"@pixi/mesh":25,"@pixi/mesh-extras":24,"@pixi/mixin-cache-as-bitmap":26,"@pixi/mixin-get-child-by-name":27,"@pixi/mixin-get-global-position":28,"@pixi/particles":29,"@pixi/polyfill":30,"@pixi/prepare":31,"@pixi/runner":32,"@pixi/settings":33,"@pixi/sprite":36,"@pixi/sprite-animated":34,"@pixi/sprite-tiling":35,"@pixi/spritesheet":37,"@pixi/text":39,"@pixi/text-bitmap":38,"@pixi/ticker":40,"@pixi/utils":41}],51:[function(require,module,exports){
+},{"@pixi/accessibility":9,"@pixi/app":10,"@pixi/constants":11,"@pixi/core":12,"@pixi/display":13,"@pixi/extract":14,"@pixi/filter-alpha":15,"@pixi/filter-blur":16,"@pixi/filter-color-matrix":17,"@pixi/filter-displacement":18,"@pixi/filter-fxaa":19,"@pixi/filter-noise":20,"@pixi/graphics":21,"@pixi/interaction":22,"@pixi/loaders":23,"@pixi/math":24,"@pixi/mesh":26,"@pixi/mesh-extras":25,"@pixi/mixin-cache-as-bitmap":27,"@pixi/mixin-get-child-by-name":28,"@pixi/mixin-get-global-position":29,"@pixi/particles":30,"@pixi/polyfill":31,"@pixi/prepare":32,"@pixi/runner":33,"@pixi/settings":34,"@pixi/sprite":37,"@pixi/sprite-animated":35,"@pixi/sprite-tiling":36,"@pixi/spritesheet":38,"@pixi/text":40,"@pixi/text-bitmap":39,"@pixi/ticker":41,"@pixi/utils":42}],52:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -59009,7 +59037,7 @@ Body.prototype.getLocalVector = function(worldVector) {
   return Rot.mulTVec2(this.m_xf.q, worldVector);
 };
 
-},{"./Fixture":53,"./Shape":57,"./common/Math":67,"./common/Position":68,"./common/Rot":69,"./common/Sweep":70,"./common/Transform":71,"./common/Vec2":72,"./common/Velocity":74,"./util/common":101,"./util/options":103}],52:[function(require,module,exports){
+},{"./Fixture":54,"./Shape":58,"./common/Math":68,"./common/Position":69,"./common/Rot":70,"./common/Sweep":71,"./common/Transform":72,"./common/Vec2":73,"./common/Velocity":75,"./util/common":102,"./util/options":104}],53:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -60235,7 +60263,7 @@ Contact.destroy = function(contact, listener) {
   }
 };
 
-},{"./Manifold":55,"./Settings":56,"./collision/Distance":62,"./common/Mat22":65,"./common/Math":67,"./common/Rot":69,"./common/Transform":71,"./common/Vec2":72,"./util/common":101}],53:[function(require,module,exports){
+},{"./Manifold":56,"./Settings":57,"./collision/Distance":63,"./common/Mat22":66,"./common/Math":68,"./common/Rot":70,"./common/Transform":72,"./common/Vec2":73,"./util/common":102}],54:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -60693,7 +60721,7 @@ Fixture.prototype.shouldCollide = function(that) {
   return collide;
 }
 
-},{"./Shape":57,"./collision/AABB":60,"./common/Math":67,"./common/Vec2":72,"./util/common":101,"./util/options":103}],54:[function(require,module,exports){
+},{"./Shape":58,"./collision/AABB":61,"./common/Math":68,"./common/Vec2":73,"./util/common":102,"./util/options":104}],55:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -60917,7 +60945,7 @@ Joint.prototype.solveVelocityConstraints = function(step) {
  */
 Joint.prototype.solvePositionConstraints = function(step) {
 };
-},{"./util/common":101}],55:[function(require,module,exports){
+},{"./util/common":102}],56:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -61266,7 +61294,7 @@ function clipSegmentToLine(vOut, vIn, normal, offset, vertexIndexA) {
   return numOut;
 }
 
-},{"./common/Math":67,"./common/Rot":69,"./common/Transform":71,"./common/Vec2":72,"./util/common":101}],56:[function(require,module,exports){
+},{"./common/Math":68,"./common/Rot":70,"./common/Transform":72,"./common/Vec2":73,"./util/common":102}],57:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -61428,7 +61456,7 @@ Settings.angularSleepTolerance = (2.0 / 180.0 * Math.PI);
 Settings.angularSleepToleranceSqr = Math.pow(Settings.angularSleepTolerance, 2);
 
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -61559,7 +61587,7 @@ Shape.prototype.computeMass = function(massData, density) {
 Shape.prototype.computeDistanceProxy = function(proxy) {
 };
 
-},{"./common/Math":67}],58:[function(require,module,exports){
+},{"./common/Math":68}],59:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -62464,7 +62492,7 @@ Solver.prototype.postSolveIsland = function() {
   }
 };
 
-},{"./Body":51,"./Contact":52,"./Joint":54,"./Settings":56,"./collision/Distance":62,"./collision/TimeOfImpact":64,"./common/Math":67,"./common/Vec2":72,"./util/common":101}],59:[function(require,module,exports){
+},{"./Body":52,"./Contact":53,"./Joint":55,"./Settings":57,"./collision/Distance":63,"./collision/TimeOfImpact":65,"./common/Math":68,"./common/Vec2":73,"./util/common":102}],60:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -63591,7 +63619,7 @@ World.prototype.postSolve = function(contact, impulse) {
  * Moved to Fixture.
  */
 
-},{"./Body":51,"./Contact":52,"./Joint":54,"./Solver":58,"./collision/BroadPhase":61,"./common/Vec2":72,"./util/common":101,"./util/options":103}],60:[function(require,module,exports){
+},{"./Body":52,"./Contact":53,"./Joint":55,"./Solver":59,"./collision/BroadPhase":62,"./common/Vec2":73,"./util/common":102,"./util/options":104}],61:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -63850,7 +63878,7 @@ AABB.prototype.rayCast = function(output, input) {
 AABB.prototype.toString = function() {
   return JSON.stringify(this);
 }
-},{"../Settings":56,"../common/Math":67,"../common/Vec2":72,"../util/common":101}],61:[function(require,module,exports){
+},{"../Settings":57,"../common/Math":68,"../common/Vec2":73,"../util/common":102}],62:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -64084,7 +64112,7 @@ BroadPhase.prototype.queryCallback = function(proxyId) {
   return true;
 }
 
-},{"../Settings":56,"../common/Math":67,"../util/common":101,"./AABB":60,"./DynamicTree":63}],62:[function(require,module,exports){
+},{"../Settings":57,"../common/Math":68,"../util/common":102,"./AABB":61,"./DynamicTree":64}],63:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -64777,7 +64805,7 @@ Distance.testOverlap = function(shapeA, indexA, shapeB, indexB, xfA, xfB) {
 
   return output.distance < 10.0 * Math.EPSILON;
 }
-},{"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../common/stats":75,"../util/common":101}],63:[function(require,module,exports){
+},{"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../common/stats":76,"../util/common":102}],64:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -65694,7 +65722,7 @@ function Iterator() {
   };
 }
 
-},{"../Settings":56,"../common/Math":67,"../common/Vec2":72,"../util/Pool":99,"../util/common":101,"./AABB":60}],64:[function(require,module,exports){
+},{"../Settings":57,"../common/Math":68,"../common/Vec2":73,"../util/Pool":100,"../util/common":102,"./AABB":61}],65:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -66193,7 +66221,7 @@ SeparationFunction.prototype.evaluate = function(t) {
   return this.compute(false, t);
 };
 
-},{"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../common/stats":75,"../util/Timer":100,"../util/common":101,"./Distance":62}],65:[function(require,module,exports){
+},{"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../common/stats":76,"../util/Timer":101,"../util/common":102,"./Distance":63}],66:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -66412,7 +66440,7 @@ Mat22.add = function(mx1, mx2) {
   return new Mat22(Vec2.add(mx1.ex, mx2.ex), Vec2.add(mx1.ey, mx2.ey));
 }
 
-},{"../util/common":101,"./Math":67,"./Vec2":72}],66:[function(require,module,exports){
+},{"../util/common":102,"./Math":68,"./Vec2":73}],67:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -66637,7 +66665,7 @@ Mat33.add = function(a, b) {
   );
 }
 
-},{"../util/common":101,"./Math":67,"./Vec2":72,"./Vec3":73}],67:[function(require,module,exports){
+},{"../util/common":102,"./Math":68,"./Vec2":73,"./Vec3":74}],68:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -66748,7 +66776,7 @@ math.random = function(min, max) {
   return min == max ? min : native.random() * (max - min) + min;
 };
 
-},{"../util/common":101,"../util/create":102}],68:[function(require,module,exports){
+},{"../util/common":102,"../util/create":103}],69:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -66790,7 +66818,7 @@ Position.prototype.getTransform = function(xf, p) {
   xf.p.set(Vec2.sub(this.c, Rot.mulVec2(xf.q, p)));
   return xf;
 }
-},{"./Rot":69,"./Vec2":72}],69:[function(require,module,exports){
+},{"./Rot":70,"./Vec2":73}],70:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -67020,7 +67048,7 @@ Rot.mulTVec2 = function(rot, m) {
   return Vec2.neo(rot.c * m.x + rot.s * m.y, -rot.s * m.x + rot.c * m.y);
 }
 
-},{"../util/common":101,"./Math":67,"./Vec2":72}],70:[function(require,module,exports){
+},{"../util/common":102,"./Math":68,"./Vec2":73}],71:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -67153,7 +67181,7 @@ Sweep.prototype.set = function(that) {
   this.c.set(that.c);
 };
 
-},{"../util/common":101,"./Math":67,"./Rot":69,"./Transform":71,"./Vec2":72}],71:[function(require,module,exports){
+},{"../util/common":102,"./Math":68,"./Rot":70,"./Transform":72,"./Vec2":73}],72:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -67387,7 +67415,7 @@ Transform.mulTXf = function(a, b) {
   return xf;
 }
 
-},{"../util/common":101,"./Rot":69,"./Vec2":72}],72:[function(require,module,exports){
+},{"../util/common":102,"./Rot":70,"./Vec2":73}],73:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -67908,7 +67936,7 @@ Vec2.translateFn = function(x, y) {
   };
 }
 
-},{"../util/common":101,"./Math":67}],73:[function(require,module,exports){
+},{"../util/common":102,"./Math":68}],74:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -68083,7 +68111,7 @@ Vec3.neg = function(v) {
   return new Vec3(-v.x, -v.y, -v.z);
 }
 
-},{"../util/common":101,"./Math":67}],74:[function(require,module,exports){
+},{"../util/common":102,"./Math":68}],75:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -68118,7 +68146,7 @@ function Velocity() {
   this.v = Vec2.zero();
   this.w = 0;
 }
-},{"./Vec2":72}],75:[function(require,module,exports){
+},{"./Vec2":73}],76:[function(require,module,exports){
 var _DEBUG = typeof DEBUG === 'undefined' ? false : DEBUG;
 var _ASSERT = typeof ASSERT === 'undefined' ? false : ASSERT;
 
@@ -68132,7 +68160,7 @@ exports.toString = function(newline) {
   }
   return string;
 };
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 exports.internal = {};
 
 exports.Serializer = require('./serializer');
@@ -68186,7 +68214,7 @@ exports.internal.TimeOfImpact = require('./collision/TimeOfImpact');
 exports.internal.DynamicTree = require('./collision/DynamicTree');
 exports.internal.Settings = require('./Settings');
 
-},{"./Body":51,"./Contact":52,"./Fixture":53,"./Joint":54,"./Manifold":55,"./Settings":56,"./Shape":57,"./World":59,"./collision/AABB":60,"./collision/Distance":62,"./collision/DynamicTree":63,"./collision/TimeOfImpact":64,"./common/Mat22":65,"./common/Mat33":66,"./common/Math":67,"./common/Rot":69,"./common/Sweep":70,"./common/Transform":71,"./common/Vec2":72,"./common/Vec3":73,"./common/stats":75,"./joint/DistanceJoint":77,"./joint/FrictionJoint":78,"./joint/GearJoint":79,"./joint/MotorJoint":80,"./joint/MouseJoint":81,"./joint/PrismaticJoint":82,"./joint/PulleyJoint":83,"./joint/RevoluteJoint":84,"./joint/RopeJoint":85,"./joint/WeldJoint":86,"./joint/WheelJoint":87,"./serializer":88,"./shape/BoxShape":89,"./shape/ChainShape":90,"./shape/CircleShape":91,"./shape/CollideCircle":92,"./shape/CollideCirclePolygone":93,"./shape/CollideEdgeCircle":94,"./shape/CollideEdgePolygon":95,"./shape/CollidePolygon":96,"./shape/EdgeShape":97,"./shape/PolygonShape":98}],77:[function(require,module,exports){
+},{"./Body":52,"./Contact":53,"./Fixture":54,"./Joint":55,"./Manifold":56,"./Settings":57,"./Shape":58,"./World":60,"./collision/AABB":61,"./collision/Distance":63,"./collision/DynamicTree":64,"./collision/TimeOfImpact":65,"./common/Mat22":66,"./common/Mat33":67,"./common/Math":68,"./common/Rot":70,"./common/Sweep":71,"./common/Transform":72,"./common/Vec2":73,"./common/Vec3":74,"./common/stats":76,"./joint/DistanceJoint":78,"./joint/FrictionJoint":79,"./joint/GearJoint":80,"./joint/MotorJoint":81,"./joint/MouseJoint":82,"./joint/PrismaticJoint":83,"./joint/PulleyJoint":84,"./joint/RevoluteJoint":85,"./joint/RopeJoint":86,"./joint/WeldJoint":87,"./joint/WheelJoint":88,"./serializer":89,"./shape/BoxShape":90,"./shape/ChainShape":91,"./shape/CircleShape":92,"./shape/CollideCircle":93,"./shape/CollideCirclePolygone":94,"./shape/CollideEdgeCircle":95,"./shape/CollideEdgePolygon":96,"./shape/CollidePolygon":97,"./shape/EdgeShape":98,"./shape/PolygonShape":99}],78:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -68593,7 +68621,7 @@ DistanceJoint.prototype.solvePositionConstraints = function(step) {
   return Math.abs(C) < Settings.linearSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/create":102,"../util/options":103}],78:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/create":103,"../util/options":104}],79:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -68931,7 +68959,7 @@ FrictionJoint.prototype.solvePositionConstraints = function(step) {
   return true;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],79:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],80:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -69437,7 +69465,7 @@ GearJoint.prototype.solvePositionConstraints = function(step) {
   return linearError < Settings.linearSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103,"./PrismaticJoint":82,"./RevoluteJoint":84}],80:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104,"./PrismaticJoint":83,"./RevoluteJoint":85}],81:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -69828,7 +69856,7 @@ MotorJoint.prototype.solvePositionConstraints = function(step) {
   return true;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],81:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],82:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -70157,7 +70185,7 @@ MouseJoint.prototype.solvePositionConstraints = function(step) {
   return true;
 }
 
-},{"../Body":51,"../Joint":54,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],82:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],83:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -70936,7 +70964,7 @@ PrismaticJoint.prototype.solvePositionConstraints = function(step) {
       && angularError <= Settings.angularSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],83:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],84:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -71343,7 +71371,7 @@ PulleyJoint.prototype.solvePositionConstraints = function(step) {
   return linearError < Settings.linearSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],84:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],85:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -72019,7 +72047,7 @@ RevoluteJoint.prototype.solvePositionConstraints = function(step) {
       && angularError <= Settings.angularSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/common":101,"../util/create":102,"../util/options":103}],85:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/common":102,"../util/create":103,"../util/options":104}],86:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -72359,7 +72387,7 @@ RopeJoint.prototype.solvePositionConstraints = function(step) {
   return length - this.m_maxLength < Settings.linearSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/create":102,"../util/options":103}],86:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/create":103,"../util/options":104}],87:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -72816,7 +72844,7 @@ WeldJoint.prototype.solvePositionConstraints = function(step) {
       && angularError <= Settings.angularSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/create":102,"../util/options":103}],87:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/create":103,"../util/options":104}],88:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -73406,7 +73434,7 @@ WheelJoint.prototype.solvePositionConstraints = function(step) {
   return Math.abs(C) <= Settings.linearSlop;
 }
 
-},{"../Body":51,"../Joint":54,"../Settings":56,"../common/Mat22":65,"../common/Mat33":66,"../common/Math":67,"../common/Position":68,"../common/Rot":69,"../common/Sweep":70,"../common/Transform":71,"../common/Vec2":72,"../common/Vec3":73,"../common/Velocity":74,"../util/create":102,"../util/options":103}],88:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Settings":57,"../common/Mat22":66,"../common/Mat33":67,"../common/Math":68,"../common/Position":69,"../common/Rot":70,"../common/Sweep":71,"../common/Transform":72,"../common/Vec2":73,"../common/Vec3":74,"../common/Velocity":75,"../util/create":103,"../util/options":104}],89:[function(require,module,exports){
 var World = require('../World');
 var Body = require('../Body');
 var Joint = require('../Joint');
@@ -73523,7 +73551,7 @@ var serializer = new Serializer();
 module.exports.toJson = serializer.toJson;
 module.exports.fromJson = serializer.fromJson;
 
-},{"../Body":51,"../Joint":54,"../Shape":57,"../World":59}],89:[function(require,module,exports){
+},{"../Body":52,"../Joint":55,"../Shape":58,"../World":60}],90:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -73571,7 +73599,7 @@ function BoxShape(hx, hy, center, angle) {
 }
 
 
-},{"../util/common":101,"../util/create":102,"./PolygonShape":98}],90:[function(require,module,exports){
+},{"../util/common":102,"../util/create":103,"./PolygonShape":99}],91:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -73854,7 +73882,7 @@ ChainShape.prototype.computeDistanceProxy = function(proxy, childIndex) {
   proxy.m_radius = this.m_radius;
 };
 
-},{"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"../util/options":103,"./EdgeShape":97}],91:[function(require,module,exports){
+},{"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"../util/options":104,"./EdgeShape":98}],92:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -74026,7 +74054,7 @@ CircleShape.prototype.computeDistanceProxy = function(proxy) {
   proxy.m_radius = this.m_radius;
 };
 
-},{"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"../util/options":103}],92:[function(require,module,exports){
+},{"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"../util/options":104}],93:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -74096,7 +74124,7 @@ function CollideCircles(manifold, circleA, xfA, circleB, xfB) {
 }
 
 exports.CollideCircles = CollideCircles;
-},{"../Contact":52,"../Manifold":55,"../Settings":56,"../Shape":57,"../common/Math":67,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"./CircleShape":91}],93:[function(require,module,exports){
+},{"../Contact":53,"../Manifold":56,"../Settings":57,"../Shape":58,"../common/Math":68,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"./CircleShape":92}],94:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -74251,7 +74279,7 @@ function CollidePolygonCircle(manifold, polygonA, xfA, circleB, xfB) {
   }
 }
 
-},{"../Contact":52,"../Manifold":55,"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"./CircleShape":91,"./PolygonShape":98}],94:[function(require,module,exports){
+},{"../Contact":53,"../Manifold":56,"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"./CircleShape":92,"./PolygonShape":99}],95:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -74436,7 +74464,7 @@ function CollideEdgeCircle(manifold, edgeA, xfA, circleB, xfB) {
   manifold.points[0].id.cf.typeB = Manifold.e_vertex;
 }
 
-},{"../Contact":52,"../Manifold":55,"../Settings":56,"../Shape":57,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"./ChainShape":90,"./CircleShape":91,"./EdgeShape":97}],95:[function(require,module,exports){
+},{"../Contact":53,"../Manifold":56,"../Settings":57,"../Shape":58,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"./ChainShape":91,"./CircleShape":92,"./EdgeShape":98}],96:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -74921,7 +74949,7 @@ function CollideEdgePolygon(manifold, edgeA, xfA, polygonB, xfB) {
   manifold.pointCount = pointCount;
 }
 
-},{"../Contact":52,"../Manifold":55,"../Settings":56,"../Shape":57,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"./ChainShape":90,"./EdgeShape":97,"./PolygonShape":98}],96:[function(require,module,exports){
+},{"../Contact":53,"../Manifold":56,"../Settings":57,"../Shape":58,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"./ChainShape":91,"./EdgeShape":98,"./PolygonShape":99}],97:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -75184,7 +75212,7 @@ function CollidePolygons(manifold, polyA, xfA, polyB, xfB) {
   manifold.pointCount = pointCount;
 }
 
-},{"../Contact":52,"../Manifold":55,"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"./PolygonShape":98}],97:[function(require,module,exports){
+},{"../Contact":53,"../Manifold":56,"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"./PolygonShape":99}],98:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -75412,7 +75440,7 @@ EdgeShape.prototype.computeDistanceProxy = function(proxy) {
   proxy.m_radius = this.m_radius;
 };
 
-},{"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/create":102,"../util/options":103}],98:[function(require,module,exports){
+},{"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/create":103,"../util/options":104}],99:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  * Copyright (c) 2006-2011 Erin Catto  http://www.box2d.org
@@ -75931,7 +75959,7 @@ PolygonShape.prototype.computeDistanceProxy = function(proxy) {
   proxy.m_radius = this.m_radius;
 };
 
-},{"../Settings":56,"../Shape":57,"../collision/AABB":60,"../common/Math":67,"../common/Rot":69,"../common/Transform":71,"../common/Vec2":72,"../util/common":101,"../util/create":102,"../util/options":103}],99:[function(require,module,exports){
+},{"../Settings":57,"../Shape":58,"../collision/AABB":61,"../common/Math":68,"../common/Rot":70,"../common/Transform":72,"../common/Vec2":73,"../util/common":102,"../util/create":103,"../util/options":104}],100:[function(require,module,exports){
 /*
  * Copyright (c) 2016-2018 Ali Shakiba http://shakiba.me/planck.js
  *
@@ -76020,7 +76048,7 @@ function Pool(opts) {
         + _discardCount + " =" + _list.length + "/" + _max;
   };
 }
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 var _DEBUG = typeof DEBUG === 'undefined' ? false : DEBUG;
 var _ASSERT = typeof ASSERT === 'undefined' ? false : ASSERT;
 
@@ -76032,7 +76060,7 @@ module.exports.diff = function(time) {
   return Date.now() - time;
 }
 
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 var _DEBUG = typeof DEBUG === 'undefined' ? false : DEBUG;
 var _ASSERT = typeof ASSERT === 'undefined' ? false : ASSERT;
 
@@ -76047,7 +76075,7 @@ exports.assert = function(statement, err, log) {
   log && console.log(log);
   throw new Error(err);
 };
-},{}],102:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 if (typeof Object.create == 'function') {
   module.exports = function(proto, props) {
     return Object.create.call(Object, proto, props);
@@ -76065,7 +76093,7 @@ if (typeof Object.create == 'function') {
   }
 }
 
-},{}],103:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 var _DEBUG = typeof DEBUG === 'undefined' ? false : DEBUG;
 var _ASSERT = typeof ASSERT === 'undefined' ? false : ASSERT;
 
@@ -76094,7 +76122,7 @@ module.exports = function(to, from) {
   return to;
 };
 
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -76280,7 +76308,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],105:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 (function (global){(function (){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -76817,7 +76845,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],106:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -76903,7 +76931,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],107:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -76990,13 +77018,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],108:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":106,"./encode":107}],109:[function(require,module,exports){
+},{"./decode":107,"./encode":108}],110:[function(require,module,exports){
 /*!
  * resource-loader - v3.0.1
  * https://github.com/pixijs/pixi-sound
@@ -79347,7 +79375,7 @@ exports.encodeBinary = encodeBinary;
 exports.middleware = index;
 
 
-},{"mini-signals":47,"parse-uri":49}],110:[function(require,module,exports){
+},{"mini-signals":48,"parse-uri":50}],111:[function(require,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -79426,7 +79454,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this)}).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":104,"timers":110}],111:[function(require,module,exports){
+},{"process/browser.js":105,"timers":111}],112:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -80160,7 +80188,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":112,"punycode":105,"querystring":108}],112:[function(require,module,exports){
+},{"./util":113,"punycode":106,"querystring":109}],113:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -80178,4 +80206,4 @@ module.exports = {
   }
 };
 
-},{}]},{},[7]);
+},{}]},{},[8]);

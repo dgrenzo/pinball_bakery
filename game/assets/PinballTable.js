@@ -6,6 +6,7 @@ var PIXI = require("pixi.js");
 var _ = require("lodash");
 var TableLoader_1 = require("./TableLoader");
 var Flipper_1 = require("./Flipper");
+var Pinball_1 = require("./Pinball");
 var PinballTable = (function () {
     function PinballTable(pixi_app) {
         var _this = this;
@@ -17,13 +18,13 @@ var PinballTable = (function () {
         this.init = function () {
             _this.spawnBall();
             _this.addFlipper({
-                x: 14,
-                y: 25.25,
+                x: 14.25,
+                y: 25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.LEFT
             });
             _this.addFlipper({
-                x: 26,
-                y: 25.25,
+                x: 25.75,
+                y: 25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.RIGHT
             });
             document.addEventListener('keypress', function (evt) {
@@ -33,19 +34,16 @@ var PinballTable = (function () {
             });
         };
         this.update = function (deltaTime) {
-            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1500, 20, 10);
+            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1400, 20, 10);
             _.forEach(_this.m_entities, function (ent) {
                 ent.update();
             });
         };
         this.spawnBall = function () {
-            var ball = _this.createElement({
-                type: "dynamic",
-                bullet: true,
-                linearDamping: 0.05,
-            });
-            ball.setPosition(25, 0);
-            ball.addCircle(0.5, { density: 1, restitution: 0.55 });
+            var ball = _this.addBall(25, 0);
+        };
+        this.addBall = function (x, y) {
+            return _this.addElement(new Pinball_1.default(_this.m_phys_world, _this, x, y));
         };
         this.addFlipper = function (config) {
             return _this.addElement(new Flipper_1.Flipper(_this.m_phys_world, _this, config));
