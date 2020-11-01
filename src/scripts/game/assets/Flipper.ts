@@ -29,7 +29,18 @@ export class Flipper extends GameElement {
 
     this.m_orientation = config.orientation;
 
-    this.addBox(4, 0.5, {density : 4, restitution : 0.15, friction : 0});
+    let verts : PLANCK.Vec2[] = [
+      {x : 0, y : -0.5},
+      {x : 0, y : 0.5},
+      {x : -4 * this.m_orientation, y : 0},
+      {x : -4 * this.m_orientation, y : -0.5},
+    ] as any;
+
+    let props = {density : 4, restitution : 0.15, friction : 0};
+    this.addCircle(0.5, props, {x : 0, y : 0});
+    this.addCircle(0.25, props, {x : -4 * this.m_orientation, y : -0.25});
+
+    this.addPolygon(verts, props);
 
     this.m_anchor_element = table.createElement();
     this.m_anchor_element.addCircle(0.25);
@@ -39,7 +50,7 @@ export class Flipper extends GameElement {
 
     document.addEventListener("keydown", (evt : KeyboardEvent) => {
       if (evt.key === KEY_CODE) {
-        this.m_joint.setMotorSpeed(this.m_orientation * 12.0);
+        this.m_joint.setMotorSpeed(this.m_orientation * 16.0);
       }
     })
     document.addEventListener("keyup", (evt : KeyboardEvent) => {
@@ -54,7 +65,7 @@ export class Flipper extends GameElement {
   
   public setPosition = (x : number, y : number) => {   
     this.m_anchor_element.setPosition(x, y);
-    this.body.setPosition(PLANCK.Vec2(x - (this.m_orientation * 2), y));
+    this.body.setPosition(PLANCK.Vec2(x, y));
     this.updateJoint();
 
     this.update();
@@ -78,7 +89,7 @@ export class Flipper extends GameElement {
       {
         enableMotor : true,
         enableLimit : true,
-        maxMotorTorque : 25000.0,
+        maxMotorTorque : 20000.0,
         motorSpeed : 0,
         lowerAngle,
         upperAngle,

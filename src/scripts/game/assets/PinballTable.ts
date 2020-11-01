@@ -14,6 +14,8 @@ export default class PinballTable {
 
   private m_entities : GameElement[] = [];
 
+  private grav_offset = 0;
+
   constructor (private pixi_app : PIXI.Application) {
 
     this.sprite.scale.set(1);
@@ -22,7 +24,7 @@ export default class PinballTable {
     pixi_app.ticker.add(this.update);
 
     this.m_phys_world = PLANCK.World({
-      gravity : PLANCK.Vec2(0, 30)
+      gravity : PLANCK.Vec2(0, 70)
     });
   }
 
@@ -32,13 +34,13 @@ export default class PinballTable {
 
     this.addFlipper({
       x : 14, 
-      y : 25, 
+      y : 25.25, 
       orientation : FLIPPER_ORIENTATION.LEFT 
     });
 
     this.addFlipper({
       x : 26, 
-      y : 25, 
+      y : 25.25, 
       orientation : FLIPPER_ORIENTATION.RIGHT 
     });    
 
@@ -47,6 +49,7 @@ export default class PinballTable {
         this.spawnBall();
       }
     })
+
   }
 
   public load (path : string) : Promise<void> {
@@ -55,8 +58,7 @@ export default class PinballTable {
 
   private update = (deltaTime : number) => {
 
-    this.m_phys_world.step( this.pixi_app.ticker.deltaMS / 1000 , 20, 10);
-
+    this.m_phys_world.step( this.pixi_app.ticker.deltaMS / 1500 , 20, 10);
     _.forEach(this.m_entities, ent => {
       ent.update();
     })

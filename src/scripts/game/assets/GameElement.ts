@@ -72,14 +72,15 @@ export default class GameElement {
   }
 
   
-  public addCircle = (radius : number, props ?: IFixtureProperties) => {
+  public addCircle = (radius : number, props ?: IFixtureProperties, position ?: { x : number, y : number}) => {
     props = _.defaults(props, FIXTURE_DEFAULTS);
+    position = _.defaults(position, {x : 0, y : 0});
 
-    let fixture = this.body.createFixture(PLANCK.Circle(radius) as any, props as PLANCK.FixtureOpt);
+    let fixture = this.body.createFixture(PLANCK.Circle(position as any, radius) as any, props as PLANCK.FixtureOpt);
 
     this.debug
       .beginFill(0xFFFFFF, 0.15)
       .lineStyle(1, 0xFFFFFF, 1)
-      .drawCircle(0, 0, radius * WORLD_SCALE);
+      .drawCircle(position.x * WORLD_SCALE,  position.y * WORLD_SCALE, radius * WORLD_SCALE);
   }
 }
