@@ -15,7 +15,7 @@ export function LoadTable(path : string, table : PinballTable) : Promise<void> {
   return LoadJSON<ITableDef>("assets/json/" + path)
     .then( (data : ITableDef) => {
       _.forEach(data.static_elements, element => {
-        
+
         let table_element = table.createElement();
 
         let vertices : PLANCK.Vec2[] = [];
@@ -23,7 +23,7 @@ export function LoadTable(path : string, table : PinballTable) : Promise<void> {
           vertices.push(PLANCK.Vec2(vertex[0], vertex[1]));
         })
 
-        table_element.addPolygon(vertices);
+        table_element.addPolygon(vertices, {restitution : 0});
       })
      });
   

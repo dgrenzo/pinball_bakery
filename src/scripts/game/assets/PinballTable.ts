@@ -16,6 +16,8 @@ export default class PinballTable {
 
   constructor (private pixi_app : PIXI.Application) {
 
+    this.sprite.scale.set(1);
+
     pixi_app.stage.addChild(this.sprite);
     pixi_app.ticker.add(this.update);
 
@@ -66,11 +68,11 @@ export default class PinballTable {
     let ball = this.createElement({
       type : "dynamic",
       bullet : true,
-      linearDamping : 0.01,
+      linearDamping : 0.05,
     });
 
     ball.setPosition(25, 0);
-    ball.addCircle(0.5, {density : 4, restitution : 0.85});
+    ball.addCircle(0.5, {density : 1, restitution : 0.55});
   }
 
   public addFlipper = (config : IFlipperConfig) : Flipper => {

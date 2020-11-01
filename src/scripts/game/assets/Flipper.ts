@@ -21,7 +21,7 @@ export class Flipper extends GameElement {
   private m_orientation : FLIPPER_ORIENTATION;
 
   private m_anchor_element : GameElement;
-  
+
   private m_joint : PLANCK.RevoluteJoint;
 
   constructor (private world : PLANCK.World, table : PinballTable, config : IFlipperConfig) {
@@ -29,7 +29,7 @@ export class Flipper extends GameElement {
 
     this.m_orientation = config.orientation;
 
-    this.addBox(4, 0.5, {density : 6, restitution : 0.65, friction : 0});
+    this.addBox(4, 0.5, {density : 4, restitution : 0.15, friction : 0});
 
     this.m_anchor_element = table.createElement();
     this.m_anchor_element.addCircle(0.25);
@@ -39,12 +39,12 @@ export class Flipper extends GameElement {
 
     document.addEventListener("keydown", (evt : KeyboardEvent) => {
       if (evt.key === KEY_CODE) {
-        this.m_joint.setMotorSpeed(this.m_orientation * 2000.0);
+        this.m_joint.setMotorSpeed(this.m_orientation * 12.0);
       }
     })
     document.addEventListener("keyup", (evt : KeyboardEvent) => {
       if (evt.key === KEY_CODE) {
-        this.m_joint.setMotorSpeed(this.m_orientation * -500.0);
+        this.m_joint.setMotorSpeed(this.m_orientation * -12.0);
       }
     })
 
@@ -68,17 +68,17 @@ export class Flipper extends GameElement {
     let lowerAngle : number, upperAngle : number;
     if (this.m_orientation === FLIPPER_ORIENTATION.RIGHT) {
       lowerAngle = -30 * Math.PI / 180.0;
-      upperAngle = 5 * Math.PI / 180.0;
+      upperAngle = 15 * Math.PI / 180.0;
     } else {
       upperAngle = 30 * Math.PI / 180.0;
-      lowerAngle = -5 * Math.PI / 180.0;
+      lowerAngle = -15 * Math.PI / 180.0;
     }
 
     this.m_joint = PLANCK.RevoluteJoint(
       {
         enableMotor : true,
         enableLimit : true,
-        maxMotorTorque : 10000.0,
+        maxMotorTorque : 25000.0,
         motorSpeed : 0,
         lowerAngle,
         upperAngle,
