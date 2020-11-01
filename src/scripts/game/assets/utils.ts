@@ -1,1 +1,0 @@
-export const WORLD_SCALE : number = 20;
