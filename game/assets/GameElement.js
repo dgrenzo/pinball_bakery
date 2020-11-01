@@ -47,13 +47,14 @@ var GameElement = (function () {
             }
             _this.debug.lineTo(points[0].x * utils_1.WORLD_SCALE, points[0].y * utils_1.WORLD_SCALE).endFill();
         };
-        this.addCircle = function (radius, props) {
+        this.addCircle = function (radius, props, position) {
             props = _.defaults(props, FIXTURE_DEFAULTS);
-            var fixture = _this.body.createFixture(PLANCK.Circle(radius), props);
+            position = _.defaults(position, { x: 0, y: 0 });
+            var fixture = _this.body.createFixture(PLANCK.Circle(position, radius), props);
             _this.debug
                 .beginFill(0xFFFFFF, 0.15)
                 .lineStyle(1, 0xFFFFFF, 1)
-                .drawCircle(0, 0, radius * utils_1.WORLD_SCALE);
+                .drawCircle(position.x * utils_1.WORLD_SCALE, position.y * utils_1.WORLD_SCALE, radius * utils_1.WORLD_SCALE);
         };
         this.sprite.addChild(this.debug);
     }

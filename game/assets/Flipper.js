@@ -28,7 +28,7 @@ var Flipper = (function (_super) {
         _this.world = world;
         _this.setPosition = function (x, y) {
             _this.m_anchor_element.setPosition(x, y);
-            _this.body.setPosition(PLANCK.Vec2(x - (_this.m_orientation * 2), y));
+            _this.body.setPosition(PLANCK.Vec2(x, y));
             _this.updateJoint();
             _this.update();
         };
@@ -48,7 +48,7 @@ var Flipper = (function (_super) {
             _this.m_joint = PLANCK.RevoluteJoint({
                 enableMotor: true,
                 enableLimit: true,
-                maxMotorTorque: 25000.0,
+                maxMotorTorque: 20000.0,
                 motorSpeed: 0,
                 lowerAngle: lowerAngle,
                 upperAngle: upperAngle,
@@ -57,13 +57,22 @@ var Flipper = (function (_super) {
             _this.world.createJoint(_this.m_joint);
         };
         _this.m_orientation = config.orientation;
-        _this.addBox(4, 0.5, { density: 4, restitution: 0.15, friction: 0 });
+        var verts = [
+            { x: 0, y: -0.5 },
+            { x: 0, y: 0.5 },
+            { x: -4 * _this.m_orientation, y: 0 },
+            { x: -4 * _this.m_orientation, y: -0.5 },
+        ];
+        var props = { density: 4, restitution: 0.15, friction: 0 };
+        _this.addCircle(0.5, props, { x: 0, y: 0 });
+        _this.addCircle(0.25, props, { x: -4 * _this.m_orientation, y: -0.25 });
+        _this.addPolygon(verts, props);
         _this.m_anchor_element = table.createElement();
         _this.m_anchor_element.addCircle(0.25);
         var KEY_CODE = _this.m_orientation === FLIPPER_ORIENTATION.LEFT ? 'a' : 'd';
         document.addEventListener("keydown", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * 12.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * 16.0);
             }
         });
         document.addEventListener("keyup", function (evt) {

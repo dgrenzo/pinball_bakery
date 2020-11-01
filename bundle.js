@@ -44,7 +44,7 @@ var Flipper = (function (_super) {
         _this.world = world;
         _this.setPosition = function (x, y) {
             _this.m_anchor_element.setPosition(x, y);
-            _this.body.setPosition(PLANCK.Vec2(x - (_this.m_orientation * 2), y));
+            _this.body.setPosition(PLANCK.Vec2(x, y));
             _this.updateJoint();
             _this.update();
         };
@@ -64,7 +64,7 @@ var Flipper = (function (_super) {
             _this.m_joint = PLANCK.RevoluteJoint({
                 enableMotor: true,
                 enableLimit: true,
-                maxMotorTorque: 25000.0,
+                maxMotorTorque: 20000.0,
                 motorSpeed: 0,
                 lowerAngle: lowerAngle,
                 upperAngle: upperAngle,
@@ -73,13 +73,22 @@ var Flipper = (function (_super) {
             _this.world.createJoint(_this.m_joint);
         };
         _this.m_orientation = config.orientation;
-        _this.addBox(4, 0.5, { density: 4, restitution: 0.15, friction: 0 });
+        var verts = [
+            { x: 0, y: -0.5 },
+            { x: 0, y: 0.5 },
+            { x: -4 * _this.m_orientation, y: 0 },
+            { x: -4 * _this.m_orientation, y: -0.5 },
+        ];
+        var props = { density: 4, restitution: 0.15, friction: 0 };
+        _this.addCircle(0.5, props, { x: 0, y: 0 });
+        _this.addCircle(0.25, props, { x: -4 * _this.m_orientation, y: -0.25 });
+        _this.addPolygon(verts, props);
         _this.m_anchor_element = table.createElement();
         _this.m_anchor_element.addCircle(0.25);
         var KEY_CODE = _this.m_orientation === FLIPPER_ORIENTATION.LEFT ? 'a' : 'd';
         document.addEventListener("keydown", function (evt) {
             if (evt.key === KEY_CODE) {
-                _this.m_joint.setMotorSpeed(_this.m_orientation * 12.0);
+                _this.m_joint.setMotorSpeed(_this.m_orientation * 16.0);
             }
         });
         document.addEventListener("keyup", function (evt) {
@@ -144,13 +153,14 @@ var GameElement = (function () {
             }
             _this.debug.lineTo(points[0].x * utils_1.WORLD_SCALE, points[0].y * utils_1.WORLD_SCALE).endFill();
         };
-        this.addCircle = function (radius, props) {
+        this.addCircle = function (radius, props, position) {
             props = _.defaults(props, FIXTURE_DEFAULTS);
-            var fixture = _this.body.createFixture(PLANCK.Circle(radius), props);
+            position = _.defaults(position, { x: 0, y: 0 });
+            var fixture = _this.body.createFixture(PLANCK.Circle(position, radius), props);
             _this.debug
                 .beginFill(0xFFFFFF, 0.15)
                 .lineStyle(1, 0xFFFFFF, 1)
-                .drawCircle(0, 0, radius * utils_1.WORLD_SCALE);
+                .drawCircle(position.x * utils_1.WORLD_SCALE, position.y * utils_1.WORLD_SCALE, radius * utils_1.WORLD_SCALE);
         };
         this.sprite.addChild(this.debug);
     }
@@ -174,16 +184,17 @@ var PinballTable = (function () {
         this.sprite = new PIXI.Sprite();
         this.m_ticker = new PIXI.Ticker();
         this.m_entities = [];
+        this.grav_offset = 0;
         this.init = function () {
             _this.spawnBall();
             _this.addFlipper({
                 x: 14,
-                y: 25,
+                y: 25.25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.LEFT
             });
             _this.addFlipper({
                 x: 26,
-                y: 25,
+                y: 25.25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.RIGHT
             });
             document.addEventListener('keypress', function (evt) {
@@ -193,7 +204,7 @@ var PinballTable = (function () {
             });
         };
         this.update = function (deltaTime) {
-            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1000, 20, 10);
+            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1500, 20, 10);
             _.forEach(_this.m_entities, function (ent) {
                 ent.update();
             });
@@ -223,7 +234,7 @@ var PinballTable = (function () {
         pixi_app.stage.addChild(this.sprite);
         pixi_app.ticker.add(this.update);
         this.m_phys_world = PLANCK.World({
-            gravity: PLANCK.Vec2(0, 30)
+            gravity: PLANCK.Vec2(0, 70)
         });
     }
     PinballTable.prototype.load = function (path) {

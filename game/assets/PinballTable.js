@@ -13,16 +13,17 @@ var PinballTable = (function () {
         this.sprite = new PIXI.Sprite();
         this.m_ticker = new PIXI.Ticker();
         this.m_entities = [];
+        this.grav_offset = 0;
         this.init = function () {
             _this.spawnBall();
             _this.addFlipper({
                 x: 14,
-                y: 25,
+                y: 25.25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.LEFT
             });
             _this.addFlipper({
                 x: 26,
-                y: 25,
+                y: 25.25,
                 orientation: Flipper_1.FLIPPER_ORIENTATION.RIGHT
             });
             document.addEventListener('keypress', function (evt) {
@@ -32,7 +33,7 @@ var PinballTable = (function () {
             });
         };
         this.update = function (deltaTime) {
-            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1000, 20, 10);
+            _this.m_phys_world.step(_this.pixi_app.ticker.deltaMS / 1500, 20, 10);
             _.forEach(_this.m_entities, function (ent) {
                 ent.update();
             });
@@ -62,7 +63,7 @@ var PinballTable = (function () {
         pixi_app.stage.addChild(this.sprite);
         pixi_app.ticker.add(this.update);
         this.m_phys_world = PLANCK.World({
-            gravity: PLANCK.Vec2(0, 30)
+            gravity: PLANCK.Vec2(0, 70)
         });
     }
     PinballTable.prototype.load = function (path) {
