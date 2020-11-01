@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
 import { LoadTable } from "./TableLoader";
 import { Flipper, FLIPPER_ORIENTATION, IFlipperConfig } from "./Flipper";
+import Pinball from "./Pinball";
 
 export default class PinballTable {
 
@@ -33,14 +34,14 @@ export default class PinballTable {
     this.spawnBall();
 
     this.addFlipper({
-      x : 14, 
-      y : 25.25, 
+      x : 14.25, 
+      y : 25, 
       orientation : FLIPPER_ORIENTATION.LEFT 
     });
 
     this.addFlipper({
-      x : 26, 
-      y : 25.25, 
+      x : 25.75, 
+      y : 25, 
       orientation : FLIPPER_ORIENTATION.RIGHT 
     });    
 
@@ -58,7 +59,7 @@ export default class PinballTable {
 
   private update = (deltaTime : number) => {
 
-    this.m_phys_world.step( this.pixi_app.ticker.deltaMS / 1500 , 20, 10);
+    this.m_phys_world.step( this.pixi_app.ticker.deltaMS / 1400 , 20, 10);
     _.forEach(this.m_entities, ent => {
       ent.update();
     })
@@ -66,15 +67,11 @@ export default class PinballTable {
 
   private spawnBall = () => {
 
+    let ball = this.addBall(25, 0);
+  }
 
-    let ball = this.createElement({
-      type : "dynamic",
-      bullet : true,
-      linearDamping : 0.05,
-    });
-
-    ball.setPosition(25, 0);
-    ball.addCircle(0.5, {density : 1, restitution : 0.55});
+  public addBall = (x : number, y : number) : Pinball => {
+    return this.addElement(new Pinball(this.m_phys_world, this, x, y)) as Pinball;
   }
 
   public addFlipper = (config : IFlipperConfig) : Flipper => {
